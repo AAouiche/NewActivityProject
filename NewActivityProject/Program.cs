@@ -19,15 +19,25 @@ using Infrastructure.Repositories;
 using FluentValidation;
 using Domain.Validation;
 using Microsoft.AspNetCore.Mvc;
-
-
+using Infrastructure.Hubs;
+using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 /*var s = new BlobStorageService(builder.Configuration);
 await s.ListBlobContainersAsync();*/
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:5173")
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowCredentials();
+        });
+});
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -41,15 +51,18 @@ builder.Services.AddControllers();
 builder.Services.AddTransient<SeedUsers>();
 builder.Services.AddTransient<TokenService>();
 //builder.Services.AddTransient<BlobStorageService>();
-builder.AddJwtAuthentication();
+//builder.AddJwtAuthentication();
 builder.Services.AddScoped<IAccessUser, AccessUser>();
 //builder.Services.AddScoped<IActivityAttendeeRepository, ActivityAttendeeRepository>();
 builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddSingleton<IBlobStorageService, BlobStorageService>();
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 builder.Services.AddScoped<IImageRepository, ImageRepository>();
 
 builder.Services.AddScoped<IValidator<Activity>, ActivityValidator>();
+
+
+
 
 
 builder.Services.AddApplication();
@@ -64,19 +77,13 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddIdentityServices(builder.Configuration);
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-builder.Services.AddCors(options =>
-{
-    options.AddDefaultPolicy(
-        builder =>
-        {
-            builder.AllowAnyOrigin()
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
-        }) ;
-});
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -94,9 +101,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
-app.UseRouting();
 app.UseCors();
+app.UseRouting();
+
+app.UseWebSockets();
+app.MapHub<ChatHub>("/chat");
 app.UseAuthentication(); 
 app.UseAuthorization();  
 

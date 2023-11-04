@@ -1,15 +1,15 @@
-﻿using Domain.Models;
+﻿using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Domain.Interfaces
 {
-    public interface IImageRepository
+    public interface IChatHub
     {
-        Task CreateAsync( Image image);
-        Task<string> CurrentBlob(string id);
+       
     }
 }

@@ -25,8 +25,15 @@ namespace Infrastructure.Repositories
             if (existingImage != null)
             {
                 // Update properties of the existing image
+                
                 existingImage.Url = image.Url;
+                existingImage.Size = image.Size;
+                existingImage.FileName = image.FileName;
+                existingImage.CurrentBlobName = image.CurrentBlobName;
                 // Add any other properties you want to update here
+                 var check = _context.Images.Update(existingImage);
+                var existingImage2 = await _context.Images.FirstOrDefaultAsync(i => i.ApplicationUserId == image.ApplicationUserId);
+                
             }
             else
             {
@@ -34,6 +41,17 @@ namespace Infrastructure.Repositories
             }
 
             await _context.SaveChangesAsync();
+        }
+        public async Task<string> CurrentBlob(string id)
+        {
+            var image = await _context.Images.FirstOrDefaultAsync(i => i.ApplicationUserId == id);
+
+            if (image == null || string.IsNullOrEmpty(image.CurrentBlobName))
+            {
+                return string.Empty;
+            }
+
+            return image.CurrentBlobName;
         }
     }
 }

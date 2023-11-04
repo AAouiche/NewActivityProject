@@ -10,7 +10,7 @@ namespace Domain.Interfaces
 {
     public interface IBlobStorageService
     {
-        Task<string> UploadImageAsync(IFormFile imageFile);
+        Task<(string imageUrl, string blobName)> UploadImageAsync(IFormFile imageFile);
         Task<BlobInfoDTO> GetBlobAsync(string name);
     }
 }

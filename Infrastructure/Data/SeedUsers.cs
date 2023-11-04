@@ -37,7 +37,8 @@ namespace Infrastructure.Data
                     {
                         DisplayName = "Tom",
                         UserName = "tom",
-                        Email = "tom@test.com"
+                        Email = "tom@test.com",
+                        
                     },
                 };
 
@@ -83,7 +84,8 @@ namespace Infrastructure.Data
                             new ActivityAttendee
                             {
                                 ApplicationUser = users[1],
-                                IsHost = false
+                                IsHost = false,
+                                
                             },
                         }
                     },

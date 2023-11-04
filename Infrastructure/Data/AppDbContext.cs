@@ -10,6 +10,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Activity> Activities { get; set; }
     public DbSet<ActivityAttendee> Attendees { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -31,6 +32,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .HasOne(aa => aa.Activity)
             .WithMany(a => a.Attendees)
             .HasForeignKey(aa => aa.ActivityId);
+        modelBuilder.Entity<Message>()
+            .HasOne(a=> a.Activity)
+            .WithMany(u => u.Messages)
+            .OnDelete(DeleteBehavior.Cascade);
 
         /* modelBuilder.Entity<Activity>().HasData(
              new Activity

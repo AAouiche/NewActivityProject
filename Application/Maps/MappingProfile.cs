@@ -17,6 +17,11 @@ namespace NewActivityProject.Maps
     .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.ApplicationUser.DisplayName))
     .ForMember(dest => dest.Bio, opt => opt.MapFrom(src => src.ApplicationUser.Biography))
     .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ApplicationUser.Image.Url)); // Assumes each user has only one image or you're picking the first/primary image
+
+            CreateMap<Message, MessageDTO>()
+              .ForMember(dest => dest.Username, opt => opt.MapFrom(src => src.User.UserName))
+              .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.User.DisplayName))
+              .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.User.Image.Url));
         }
     
     }

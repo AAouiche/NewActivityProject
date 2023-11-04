@@ -54,7 +54,7 @@ namespace NewActivityProject.Controllers
                     Email = user.Email,
                     Token = _tokenService.Token(user),
                     DisplayName= user.DisplayName,
-                    ImageUrl = user.Image.Url
+                    ImageUrl = user.Image?.Url
                    
                     
 
@@ -79,7 +79,7 @@ namespace NewActivityProject.Controllers
                 DisplayName = user.DisplayName,
                 UserName = user.UserName,
                 Email = user.Email,
-                ImageUrl = user.Image.Url
+                ImageUrl = user.Image?.Url
                   
             };
 

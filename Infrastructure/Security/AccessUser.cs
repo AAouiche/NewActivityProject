@@ -25,7 +25,7 @@ namespace   Infrastructure.Security
         }
         public string GetUser()
         {
-
+            
             var userIdString = _HttpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(userIdString))

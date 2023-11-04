@@ -34,8 +34,8 @@ namespace Application.ImageHandlers
 
             public async Task<Result<Image>> Handle(Command request, CancellationToken cancellationToken)
             {
-                
-                var imageUrl = await _imageService.UploadImageAsync(request.ImageFile);
+
+                var (imageUrl, blobName) = await _imageService.UploadImageAsync(request.ImageFile);
 
                 var userId =  _accessUser.GetUser(); 
                 var image = new Image
@@ -44,7 +44,8 @@ namespace Application.ImageHandlers
                     FileName = request.ImageFile.FileName,
                     Size = request.ImageFile.Length,
                     ContentType = request.ImageFile.ContentType,
-                    ApplicationUserId= userId
+                    ApplicationUserId= userId,
+                    CurrentBlobName= blobName
                     
                 };
 

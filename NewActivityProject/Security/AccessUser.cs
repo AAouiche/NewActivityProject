@@ -25,7 +25,11 @@ namespace NewActivityProject.Security
         }
         public string GetUser()
         {
-
+            var claims = _HttpContextAccessor.HttpContext.User.Claims;
+            foreach (var claim in claims)
+            {
+                Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+            }
             var userIdString = _HttpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(userIdString))
