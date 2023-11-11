@@ -12,6 +12,7 @@ using Application.Accounts;
 using Domain.Validation;
 using NewActivityProject.Controllers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace NewActivityProject.Controllers
 {
@@ -39,8 +40,8 @@ namespace NewActivityProject.Controllers
         public async Task<ActionResult<UserDTO>> Login(LoginDTO LoginDto)
         {
             var user = await _context.Users
-    .Include(u => u.Image)
-    .SingleOrDefaultAsync(u => u.Email == LoginDto.Email);
+             .Include(u => u.Image)
+             .SingleOrDefaultAsync(u => u.Email == LoginDto.Email);
 
             if (user == null) return Unauthorized();
 
@@ -69,8 +70,8 @@ namespace NewActivityProject.Controllers
         public async Task<ActionResult<UserDTO>> GetUser()
         {
             var user = await _context.Users
-    .Include(u => u.Image)
-    .SingleOrDefaultAsync(u => u.Email == User.FindFirstValue(ClaimTypes.Email));
+            .Include(u => u.Image)
+            .SingleOrDefaultAsync(u => u.Email == User.FindFirstValue(ClaimTypes.Email));
 
             if (user == null) return NotFound("User not found");
 
@@ -90,6 +91,24 @@ namespace NewActivityProject.Controllers
         {
            
             return HandleResults(await _mediator.Send(new Register.Command { User = user}));
+        }
+        [HttpPost("edit")]
+        public async Task<ActionResult< EditUserDTO>> Edit(EditUserDTO user)
+        {
+            return HandleResults(await _mediator.Send(new EditUser.Command { User = user }));
+        }
+        [HttpPost("validateToken")]
+        public IActionResult ValidateToken(TokenDTO token)
+        {
+            try
+            {
+                _tokenService.ValidateToken(token);
+                return Ok();
+            }
+            catch (SecurityTokenException ex)
+            {
+                return Unauthorized(new { message = ex.Message });
+            }
         }
 
     }

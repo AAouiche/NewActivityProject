@@ -32,15 +32,20 @@ public class Details
         private readonly IAccessUser _accessUser;
         private readonly IActivityRepository _activityRepository;
         public Handler(IActivityRepository activityRepository, IAccessUser accessUser)
-{
-    _activityRepository = activityRepository;
-    _accessUser = accessUser;
-}
+            {
+             _activityRepository = activityRepository;
+             _accessUser = accessUser;
+            }
 
         public async Task<Result<Activity>> Handle(Query request, CancellationToken cancellationToken)
         {
             
             var activity = await _activityRepository.GetByIdWithAttendeesAsync(request.Id);
+
+            if (activity == null)
+            {
+                return Result<Activity>.Failure("Activity not found");
+            }
 
             return Result<Activity>.SuccessResult(activity);
         }

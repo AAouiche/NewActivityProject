@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Application.Activities; 
 using Domain.Models;
 using Domain.Validation;
+using Domain.DTO;
 
 namespace NewActivityProject.Controllers
 {
@@ -20,9 +21,14 @@ namespace NewActivityProject.Controllers
 
 
         [HttpGet("[action]")]
-        public async Task<ActionResult<Result<List<Activity>>>> List()
+        public async Task<ActionResult<Result<List<ActivityDTO>>>> List([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 5)
         {
-            var result = await _mediator.Send(new List.Query());
+            var query = new List.Query
+            {
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+            var result = await _mediator.Send(query);
             return HandleResults(result);
         }
         [HttpPost("TestCreate")]

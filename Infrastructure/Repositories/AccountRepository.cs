@@ -11,9 +11,11 @@ namespace Infrastructure.Repositories
        
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        public AccountRepository(UserManager<ApplicationUser> userManager)
+        private readonly IAccessUser _accessUser;
+        public AccountRepository(UserManager<ApplicationUser> userManager, IAccessUser accessuser)
         {
             _userManager = userManager;
+            _accessUser = accessuser;
         }
         public async Task Register(RegisterDTO userDto)
         {
@@ -21,13 +23,17 @@ namespace Infrastructure.Repositories
             {
                 UserName = userDto.Email,
                 Email = userDto.Email
-                // Assign other properties as needed
+               
             };
 
-            // Here you create the user and pass the password from DTO to be hashed by UserManager
+            
              await _userManager.CreateAsync(applicationUser, userDto.Password);
 
            
+        }
+        public async Task EditUser(EditUserDTO editedUser)
+        {
+            
         }
     }
 }

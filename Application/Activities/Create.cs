@@ -49,25 +49,19 @@ namespace Application.Activities
                     return Result<ActivityDTO>.Failure("Activity instance cannot be null.");
                 }
 
-                // Associate the activity with the user
+               
                 var userId = _accessUser.GetUser();
-                if (string.IsNullOrEmpty(userId))
-                {
-                    return Result<ActivityDTO>.Failure("User is not authenticated");
-                }
+                
 
-                // Fetch the ApplicationUser from the database based on userId
+               
                 var applicationUser = await _context.Users.FindAsync(userId);
-                if (applicationUser == null)
-                {
-                    return Result<ActivityDTO>.Failure("User not found");
-                }
+               
 
-                // Add the user to attendees and set them as a host
+                
                 var attendee = new ActivityAttendee
                 {
                     ApplicationUserId = userId,
-                    ApplicationUser = applicationUser, // Set the fetched user
+                    ApplicationUser = applicationUser, 
                     IsHost = true,
                     Activity = request.Activity,
                 };
@@ -77,7 +71,7 @@ namespace Application.Activities
 
                 var activityDTO = _mapper.Map<ActivityDTO>(request.Activity);
 
-                // Depending on your needs, you might return the DTO or the entity
+               
                 return Result<ActivityDTO>.SuccessResult(activityDTO);
             }
         }

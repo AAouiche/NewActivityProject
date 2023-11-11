@@ -17,33 +17,50 @@ namespace Application.Activities
 {
     public class List
     {
-        public class Query : IRequest<Result<List<ActivityDTO>>> { }  // Change return type to ActivityDTO
+        public class Query : IRequest<Result<PaginatedResult<ActivityDTO>>>
+        {
+           
+                public int PageNumber { get; set; } = 1;  
+                public int PageSize { get; set; } = 10;  
+            
+        }
 
-        public class Handler : IRequestHandler<Query, Result<List<ActivityDTO>>> // Change return type to ActivityDTO
+        public class Handler : IRequestHandler<Query, Result<PaginatedResult<ActivityDTO>>>
         {
             private readonly IActivityRepository _activityRepository;
             private readonly IAccessUser _accessUser;
-            private readonly IMapper _mapper;  
-            private readonly IBlobStorageService _blobStorageService;
+            private readonly IMapper _mapper;
 
-            public Handler(IActivityRepository activityRepository, IAccessUser accessUser, IMapper mapper, IBlobStorageService blobStorageService)  // Add IMapper to constructor
+            public Handler(IActivityRepository activityRepository, IAccessUser accessUser, IMapper mapper)
             {
                 _activityRepository = activityRepository;
                 _accessUser = accessUser;
                 _mapper = mapper;
-                _blobStorageService = blobStorageService;
             }
 
-            public async Task<Result<List<ActivityDTO>>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<PaginatedResult<ActivityDTO>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                //var currentUserId = _accessUser.GetUser();
+                // Fetching paginated activities
+                var pagedActivities = await _activityRepository.GetAllAsync(request.PageNumber, request.PageSize);
 
-                var activities = await _activityRepository.GetAllAsync();
+                // Mapping activities to DTOs
+                var activitiesDto = _mapper.Map<List<ActivityDTO>>(pagedActivities.Items);
 
-                
-                var activitiesDto = _mapper.Map<List<ActivityDTO>>(activities);
+                // Creating a paginated result with DTOs and metadata
+                var paginatedResult = new PaginatedResult<ActivityDTO>
+                {
+                    Items = activitiesDto,
+                    Metadata = new PaginationMetadata
+                    {
+                        TotalCount = pagedActivities.Metadata.TotalCount,
+                        PageSize = pagedActivities.Metadata.PageSize,
+                        CurrentPage = pagedActivities.Metadata.CurrentPage,
+                        TotalPages = pagedActivities.Metadata.TotalPages
+                    }
+                };
 
-                return Result<List<ActivityDTO>>.SuccessResult(activitiesDto);
+                // Returning the paginated result
+                return Result<PaginatedResult<ActivityDTO>>.SuccessResult(paginatedResult);
             }
         }
     }

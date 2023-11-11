@@ -11,12 +11,12 @@ namespace Application.Activities
 {
     public class Delete
     {
-        public class Command : IRequest<Result<Unit>>  // Note the return type change to Result<Unit>
+        public class Command : IRequest<Result<Unit>>  
         {
             public Guid Id { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command, Result<Unit>>  // Note the return type change to Result<Unit>
+        public class Handler : IRequestHandler<Command, Result<Unit>>  
         {
             private readonly IActivityRepository _activityRepository;
 
@@ -25,12 +25,10 @@ namespace Application.Activities
                 _activityRepository = activityRepository;
             }
 
-            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)  // Note the return type change to Result<Unit>
+            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken) 
             {
-                try
-                {
-                    // You might want to check if the entity exists before attempting to delete it
-                    // to provide a more specific error message if it does not exist.
+                
+                    
                     var activity = await _activityRepository.GetByIdAsync(request.Id);
                     if (activity == null)
                     {
@@ -39,13 +37,8 @@ namespace Application.Activities
 
                     await _activityRepository.DeleteAsync(request.Id);
                     
-                    return Result<Unit>.SuccessResult(Unit.Value); // Successful deletion returns Result<Unit> with Success = true
-                }
-                catch (Exception ex)
-                {
-                    
-                    return Result<Unit>.Failure($"An error occurred: {ex.Message}");
-                }
+                    return Result<Unit>.SuccessResult(Unit.Value); 
+                
             }
         }
     }

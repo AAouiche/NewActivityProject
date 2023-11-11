@@ -8,5 +8,6 @@ namespace Domain.Interfaces
     public interface IAccountRepository
     {
         Task Register(RegisterDTO user);
+
     }
 }

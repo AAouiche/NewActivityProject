@@ -19,16 +19,37 @@ namespace Infrastructure.Repositories
 
         public async Task<Activity> GetByIdAsync(Guid id)
         {
-            return await _context.Activities.FindAsync(id);
+            var activity = await _context.Activities.FindAsync(id);
+            return activity;
         }
 
-        public async Task<List<Activity>> GetAllAsync()
+        public async Task<PaginatedResult<Activity>> GetAllAsync(int pageNumber, int pageSize)
         {
-            return await _context.Activities
-                .Include(a => a.Attendees)
-                .ThenInclude(att => att.ApplicationUser)
-                .ThenInclude(user => user.Image)
-                .ToListAsync();
+            var query = _context.Activities
+                        .Include(a => a.Attendees)
+                            .ThenInclude(att => att.ApplicationUser)
+                                .ThenInclude(user => user.Image)
+                        .AsQueryable();
+
+            var count = await query.CountAsync();
+
+            var items = await query.Skip((pageNumber - 1) * pageSize)
+                                   .Take(pageSize)
+                                   .ToListAsync();
+
+            var totalPages = (int)Math.Ceiling(count / (double)pageSize);
+
+            return new PaginatedResult<Activity>
+            {
+                Items = items,
+                Metadata = new PaginationMetadata
+                {
+                    TotalCount = count,
+                    PageSize = pageSize,
+                    CurrentPage = pageNumber,
+                    TotalPages = totalPages
+                }
+            };
         }
 
         public async Task<List<Activity>> GetByUserIdAsync(string userId)
