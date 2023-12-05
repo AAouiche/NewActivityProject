@@ -43,7 +43,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
-        builder.Configuration["DATABASE_URL"],
+        builder.Configuration.GetConnectionString("DefaultConnection"),
         x => x.MigrationsAssembly("Infrastructure")));
 
 var cloudinarySettings = builder.Configuration.GetSection("Cloudinary").Get<CloudinarySettings>();
