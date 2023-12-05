@@ -30,7 +30,7 @@ namespace   Infrastructure.Security
 
             if (string.IsNullOrEmpty(userIdString))
             {
-                // Handle this case appropriately; here I'm throwing an exception, but you might handle it differently.
+                
                 throw new InvalidOperationException("User is not authenticated");
             }
 

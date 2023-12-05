@@ -13,6 +13,7 @@ using Domain.Validation;
 using NewActivityProject.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Logging;
 
 namespace NewActivityProject.Controllers
 {
@@ -27,7 +28,9 @@ namespace NewActivityProject.Controllers
         private readonly IMediator _mediator;
         private readonly AppDbContext _context;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, TokenService tokenService,IMediator mediator, AppDbContext context)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, TokenService tokenService,IMediator mediator, AppDbContext context,
+                         ILogger<AccountController> logger)
+             : base(logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -37,54 +40,15 @@ namespace NewActivityProject.Controllers
             _context = context;
         }
         [HttpPost("login")]
-        public async Task<ActionResult<UserDTO>> Login(LoginDTO LoginDto)
+        public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDto)
         {
-            var user = await _context.Users
-             .Include(u => u.Image)
-             .SingleOrDefaultAsync(u => u.Email == LoginDto.Email);
-
-            if (user == null) return Unauthorized();
-
-            var result = await _userManager.CheckPasswordAsync(user, LoginDto.Password);
-
-            if (result)
-            {
-                return new UserDTO
-                {
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    Token = _tokenService.Token(user),
-                    DisplayName= user.DisplayName,
-                    ImageUrl = user.Image?.Url
-                   
-                    
-
-                };
-            }
-
-            return Unauthorized();
+            return HandleResults(await _mediator.Send(new Login.Command { LoginDto = loginDto }));
         }
 
         [HttpGet("getUser")]
-          
         public async Task<ActionResult<UserDTO>> GetUser()
         {
-            var user = await _context.Users
-            .Include(u => u.Image)
-            .SingleOrDefaultAsync(u => u.Email == User.FindFirstValue(ClaimTypes.Email));
-
-            if (user == null) return NotFound("User not found");
-
-            var userDto = new UserDTO
-            {
-                DisplayName = user.DisplayName,
-                UserName = user.UserName,
-                Email = user.Email,
-                ImageUrl = user.Image?.Url
-                  
-            };
-
-            return Ok(userDto);
+            return HandleResults(await _mediator.Send(new GetUser.Command()));
         }
         [HttpPost("register")]
         public async Task<ActionResult<Unit>> Register(RegisterDTO user)

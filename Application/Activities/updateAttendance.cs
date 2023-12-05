@@ -9,7 +9,9 @@ using Domain.Interfaces;
 
 namespace Application.Activities
 {
+#pragma warning disable IDE1006 
     public class updateAttendance
+#pragma warning restore IDE1006 
     {
         
         public class Command : IRequest<Result<Unit>>
@@ -18,17 +20,18 @@ namespace Application.Activities
         }
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
-            private readonly AppDbContext _context; // Replace DbContext with your specific _context type
-            private readonly IAccessUser _accessUser; // Assuming you have an interface for user accessor
+            private readonly AppDbContext _context;
+            private readonly IAccessUser _accessUser; 
             private readonly IActivityRepository _activityRepository;
+            private readonly IAccountRepository _accountRepository;
 
 
-            public Handler(AppDbContext context, IAccessUser accessUser,IActivityRepository activityRepository) // Constructor injection
+            public Handler(AppDbContext context, IAccessUser accessUser,IActivityRepository activityRepository, IAccountRepository accountRepository) 
             {
                 _context = context;
                 _accessUser = accessUser;
                 _activityRepository = activityRepository;
-                
+                _accountRepository = accountRepository;
             }
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
@@ -37,7 +40,7 @@ namespace Application.Activities
                 if (activity == null) return null;
 
 
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == _accessUser.GetUser());
+                var user = await _accountRepository.GetUserByIdAsync(_accessUser.GetUser());
 
                 if (user == null) return null;
 

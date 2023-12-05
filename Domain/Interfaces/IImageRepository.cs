@@ -11,5 +11,7 @@ namespace Domain.Interfaces
     {
         Task CreateAsync( Image image);
         Task<string> CurrentBlob(string id);
+        Task<string> GetCurrentPublicId(string userId);
+        Task CreateOrUpdateAsync(Image image);
     }
 }

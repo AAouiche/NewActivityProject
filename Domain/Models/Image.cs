@@ -14,6 +14,7 @@ namespace Domain.Models
         public long Size { get; set; }
         public string ContentType { get; set; }
         public string? CurrentBlobName { get; set; }
+        public string? PublicId { get; set; }
 
         public string ApplicationUserId { get; set; }
         public ApplicationUser ApplicationUser { get; set; }

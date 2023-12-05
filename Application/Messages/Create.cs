@@ -22,20 +22,26 @@ namespace Application.Messages
             public string MessageBody { get; set; }
             public Guid ActivityId { get; set; }
         }
+
         public class CommandValidator : AbstractValidator<Command>
         {
             public CommandValidator()
             {
                 RuleFor(x => x.MessageBody).NotEmpty();
             }
-            public  class Handler : IRequestHandler<Command,Result<MessageDTO>>
+        }
+        public  class Handler : IRequestHandler<Command,Result<MessageDTO>>
             {
                 private readonly AppDbContext _context;
                 private readonly IAccessUser _accessUser;
                 private readonly IActivityRepository _activityRepository;
                 private readonly IMapper _mapper;
-                public Handler(AppDbContext context,IAccessUser accessUser, IActivityRepository activityRepository, IMapper mapper)
+                private readonly IAccountRepository _accountRepository;
+                private readonly IMessageRepository _messageRepository;
+                public Handler(AppDbContext context,IAccessUser accessUser, IActivityRepository activityRepository, IMapper mapper,IAccountRepository accountRepository,IMessageRepository messageRepository)
                 {
+                _messageRepository = messageRepository;
+                    _accountRepository = accountRepository;
                     _context = context;
                     _accessUser = accessUser;
                     _activityRepository = activityRepository;
@@ -44,9 +50,7 @@ namespace Application.Messages
                 public async Task<Result<MessageDTO>> Handle(Command request, CancellationToken cancellationToken)
                 {
 
-                    var user = await _context.Users
-                        .Include(u => u.Image)
-                        .FirstOrDefaultAsync(x => x.Id == _accessUser.GetUser());
+                var user = await _accountRepository.GetUserByIdWithImagesAsync();
                     var activity = await _activityRepository.GetByIdAsync(request.ActivityId);
                     var message = new Message
                     {
@@ -55,8 +59,8 @@ namespace Application.Messages
                         Activity = activity
                     };
 
-                    await _context.Messages.AddAsync(message);
-                    var success = await _context.SaveChangesAsync()>0;
+                    
+                    var success = await _messageRepository.AddMessageAsync(message);
                     if (success)
                     {
                         return Result<MessageDTO>.SuccessResult(_mapper.Map<MessageDTO>(message));
@@ -67,6 +71,6 @@ namespace Application.Messages
 
             }
             }
-        }
+        
     }
 

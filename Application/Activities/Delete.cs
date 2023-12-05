@@ -1,6 +1,6 @@
 ﻿using Domain.Models;
 using Infrastructure.Repositories;
-using Domain.Validation;  // Ensure your Result<T> class is accessible
+using Domain.Validation;  
 using MediatR;
 using System;
 using System.Threading;

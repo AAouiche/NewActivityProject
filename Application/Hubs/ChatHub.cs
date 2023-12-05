@@ -1,6 +1,6 @@
 ﻿using Application.Messages;
 using Domain.Interfaces;
-using Infrastructure.Migrations;
+
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -35,7 +35,7 @@ namespace Infrastructure.Hubs
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, activityId);
 
-                // Fetch the list of messages for the given activityId
+                
                 var messages = await _mediator.Send(new List.Query { Id = Guid.Parse(activityId) });
 
                

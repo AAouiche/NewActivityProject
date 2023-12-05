@@ -21,21 +21,23 @@ namespace Application.ImageHandlers
         }
         public class Handler : IRequestHandler<Command, Result<Image>>
         {
-            private readonly IBlobStorageService _imageService;
+           
             private readonly IImageRepository _imageRepository;
             private readonly IAccessUser _accessUser;
+            private readonly ICloudinaryService _cloudinaryService;
 
-            public Handler(IBlobStorageService imageService, IImageRepository imageRepository, IAccessUser accessUser)
+            public Handler( IImageRepository imageRepository, IAccessUser accessUser, ICloudinaryService cloudinaryService)
             {
-                _imageService = imageService;
+                
                 _imageRepository = imageRepository;
                 _accessUser = accessUser;
+                _cloudinaryService = cloudinaryService; 
             }
 
             public async Task<Result<Image>> Handle(Command request, CancellationToken cancellationToken)
             {
 
-                var (imageUrl, blobName) = await _imageService.UploadImageAsync(request.ImageFile);
+                var (imageUrl, PublicId) = await _cloudinaryService.UploadImageAsync(request.ImageFile);
 
                 var userId =  _accessUser.GetUser(); 
                 var image = new Image
@@ -45,7 +47,7 @@ namespace Application.ImageHandlers
                     Size = request.ImageFile.Length,
                     ContentType = request.ImageFile.ContentType,
                     ApplicationUserId= userId,
-                    CurrentBlobName= blobName
+                    PublicId = PublicId
                     
                 };
 

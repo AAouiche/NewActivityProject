@@ -1,4 +1,5 @@
-﻿using Domain.Validation;
+﻿using Domain.Interfaces;
+using Domain.Validation;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -18,23 +19,25 @@ namespace Application.Messages
         public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly AppDbContext _context;
+            private readonly IMessageRepository _messageRepository;
 
-            public Handler(AppDbContext context)
+            public Handler(AppDbContext context,IMessageRepository messageRepository)
             {
+                _messageRepository= messageRepository;
                 _context = context;
             }
 
             public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var message = await _context.Messages.FindAsync(request.Id);
+                var message = await _messageRepository.FindById(request.Id);
 
                 if (message == null)
                 {
                     return Result<Unit>.Failure("Message not found");
                 }
 
-                _context.Messages.Remove(message);
-                var success = await _context.SaveChangesAsync() > 0;
+                
+                var success = await _messageRepository.Delete(message);
 
                 if (success)
                 {

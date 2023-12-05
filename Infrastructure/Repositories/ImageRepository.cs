@@ -19,18 +19,18 @@ namespace Infrastructure.Repositories
         }
         public async Task CreateAsync(Image image)
         {
-            // Try to find an existing image by the given ApplicationUserId
+            
             var existingImage = await _context.Images.FirstOrDefaultAsync(i => i.ApplicationUserId == image.ApplicationUserId);
 
             if (existingImage != null)
             {
-                // Update properties of the existing image
+            
                 
                 existingImage.Url = image.Url;
                 existingImage.Size = image.Size;
                 existingImage.FileName = image.FileName;
                 existingImage.CurrentBlobName = image.CurrentBlobName;
-                // Add any other properties you want to update here
+                
                  var check = _context.Images.Update(existingImage);
                 var existingImage2 = await _context.Images.FirstOrDefaultAsync(i => i.ApplicationUserId == image.ApplicationUserId);
                 
@@ -52,6 +52,37 @@ namespace Infrastructure.Repositories
             }
 
             return image.CurrentBlobName;
+        }
+        public async Task<string> GetCurrentPublicId(string userId)
+        {
+            var image = await _context.Images.FirstOrDefaultAsync(i => i.ApplicationUserId == userId);
+
+            if (image == null || string.IsNullOrEmpty(image.PublicId))
+            {
+                return string.Empty;
+            }
+
+            return image.PublicId;
+        }
+        public async Task CreateOrUpdateAsync(Image image)
+        {
+            var existingImage = await _context.Images
+                .FirstOrDefaultAsync(i => i.ApplicationUserId == image.ApplicationUserId);
+
+            if (existingImage != null)
+            {
+                existingImage.Url = image.Url;
+                existingImage.Size = image.Size;
+                existingImage.FileName = image.FileName;
+                existingImage.PublicId = image.PublicId; 
+                _context.Images.Update(existingImage);
+            }
+            else
+            {
+                await _context.Images.AddAsync(image);
+            }
+
+            await _context.SaveChangesAsync();
         }
     }
 }

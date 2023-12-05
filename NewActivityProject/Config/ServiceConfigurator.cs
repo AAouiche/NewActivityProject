@@ -10,7 +10,7 @@ namespace NewActivityProject.Config
     {
         public static void AddJwtAuthentication(this WebApplicationBuilder builder)
         {
-            // Get the key from configuration
+            
             var jwtKey = builder.Configuration["JwtConfig:Key"];
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -26,6 +26,6 @@ namespace NewActivityProject.Config
             });
         }
 
-        // You can add other methods to configure other services as needed
+       
     }
 }

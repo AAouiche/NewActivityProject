@@ -75,7 +75,7 @@ namespace Infrastructure.Services
 
             await newBlobClient.UploadAsync(stream, new BlobHttpHeaders { ContentType = imageFile.ContentType });
 
-            // Update the Image entity in your database with the new blob name and other relevant data here.
+           
 
             return (newBlobClient.Uri.ToString(),uniqueBlobName);
         }

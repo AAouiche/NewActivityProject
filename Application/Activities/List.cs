@@ -19,10 +19,11 @@ namespace Application.Activities
     {
         public class Query : IRequest<Result<PaginatedResult<ActivityDTO>>>
         {
-           
-                public int PageNumber { get; set; } = 1;  
-                public int PageSize { get; set; } = 10;  
+            public int PageNumber { get; set; } = 1;
+            public int PageSize { get; set; } = 10;
             
+            public string Filter { get; set; } = "all";
+            public DateTime? SelectedDate { get; set; } 
         }
 
         public class Handler : IRequestHandler<Query, Result<PaginatedResult<ActivityDTO>>>
@@ -40,13 +41,17 @@ namespace Application.Activities
 
             public async Task<Result<PaginatedResult<ActivityDTO>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                // Fetching paginated activities
-                var pagedActivities = await _activityRepository.GetAllAsync(request.PageNumber, request.PageSize);
 
-                // Mapping activities to DTOs
+                var pagedActivities = await _activityRepository.GetAllAsync(
+                    request.PageNumber,
+                    request.PageSize,
+
+                    request.Filter,
+                    request.SelectedDate
+                );
+
                 var activitiesDto = _mapper.Map<List<ActivityDTO>>(pagedActivities.Items);
 
-                // Creating a paginated result with DTOs and metadata
                 var paginatedResult = new PaginatedResult<ActivityDTO>
                 {
                     Items = activitiesDto,
@@ -59,7 +64,6 @@ namespace Application.Activities
                     }
                 };
 
-                // Returning the paginated result
                 return Result<PaginatedResult<ActivityDTO>>.SuccessResult(paginatedResult);
             }
         }

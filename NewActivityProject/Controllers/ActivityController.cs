@@ -14,19 +14,27 @@ namespace NewActivityProject.Controllers
     {
         private readonly IMediator _mediator;
 
-        public ActivityController(IMediator mediator)
+        
+        public ActivityController(IMediator mediator, ILogger<ActivityController> logger)
+            : base(logger) 
         {
             _mediator = mediator;
         }
 
 
         [HttpGet("[action]")]
-        public async Task<ActionResult<Result<List<ActivityDTO>>>> List([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 5)
+        public async Task<ActionResult<Result<List<ActivityDTO>>>> List(
+             [FromQuery] int pageNumber = 1,
+             [FromQuery] int pageSize = 5,
+             [FromQuery] string filter = "all",
+             [FromQuery] DateTime? selectedDate = null)
         {
             var query = new List.Query
             {
                 PageNumber = pageNumber,
-                PageSize = pageSize
+                PageSize = pageSize,
+                Filter = filter, 
+                SelectedDate = selectedDate 
             };
             var result = await _mediator.Send(query);
             return HandleResults(result);

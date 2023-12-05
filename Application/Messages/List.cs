@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Domain.DTO;
+using Domain.Interfaces;
 using Domain.Validation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -20,22 +21,20 @@ namespace Application.Messages
 
         public class Handler : IRequestHandler<Query, Result<List<MessageDTO>>>
         {
-            private readonly AppDbContext _context;
+            
             private readonly IMapper _mapper;
+            private readonly IMessageRepository _messageRepository;
 
-            public Handler(AppDbContext context, IMapper mapper)
+            public Handler( IMapper mapper, IMessageRepository messageRepository)
             {
-                _context = context;
+                _messageRepository= messageRepository;
+               
                 _mapper = mapper;
             }
 
             public async Task<Result<List<MessageDTO>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var messages = await _context.Messages
-                    .Include(m => m.User)
-                    .ThenInclude(u => u.Image)
-                    .Where(m => m.Activity.Id == request.Id)
-                    .ToListAsync(cancellationToken);
+                var messages = await _messageRepository.GetAllAsync(request.Id);
 
                 var messagesDto = _mapper.Map<List<MessageDTO>>(messages);
 

@@ -31,14 +31,14 @@ namespace Application.Activities
         {
             private readonly IActivityRepository _activityRepository;
             private readonly IAccessUser _accessUser;
-            private readonly AppDbContext _context;
+            
             private readonly IMapper _mapper;
 
-            public Handler(IActivityRepository activityRepository, IAccessUser accessUser, AppDbContext context, IMapper mapper)
+            public Handler(IActivityRepository activityRepository, IAccessUser accessUser, IMapper mapper)
             {
                 _activityRepository = activityRepository;
                 _accessUser = accessUser;
-                _context = context;
+               
                 _mapper = mapper;
             }
 
@@ -54,7 +54,7 @@ namespace Application.Activities
                 
 
                
-                var applicationUser = await _context.Users.FindAsync(userId);
+                var applicationUser = await _accessUser.GetUserById(userId);
                
 
                 

@@ -8,7 +8,7 @@ namespace Domain.Interfaces
     public interface IActivityRepository
     {
         Task<Activity> GetByIdAsync(Guid id);
-        Task<PaginatedResult<Activity>> GetAllAsync(int pageNumber, int pageSize);
+        Task<PaginatedResult<Activity>> GetAllAsync(int pageNumber, int pageSize,  string filter = "all", DateTime? selectedDate = null);
         Task<List<Activity>> GetByUserIdAsync(string userId);
         Task AddAsync(Activity activity);
         Task UpdateAsync(Activity activity);

@@ -21,6 +21,9 @@ using Domain.Validation;
 using Microsoft.AspNetCore.Mvc;
 using Infrastructure.Hubs;
 using Infrastructure;
+using CloudinaryDotNet;
+using Domain.DTO;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,10 +42,22 @@ builder.Services.AddCors(options =>
         });
 });
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(
+    options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
         x => x.MigrationsAssembly("Infrastructure")));
 
+var cloudinarySettings = builder.Configuration.GetSection("Cloudinary").Get<CloudinarySettings>();
+
+
+builder.Services.AddSingleton<Cloudinary>(serviceProvider =>
+{
+    var account = new Account(
+        cloudinarySettings.CloudName,
+        cloudinarySettings.ApiKey,
+        cloudinarySettings.ApiSecret
+    );
+    return new Cloudinary(account);
+});
 
 builder.Services.AddDefaultIdentity<ApplicationUser>() 
     .AddEntityFrameworkStores<AppDbContext>(); 
@@ -58,6 +73,8 @@ builder.Services.AddScoped<IActivityRepository, ActivityRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 builder.Services.AddScoped<IImageRepository, ImageRepository>();
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 
 builder.Services.AddScoped<IValidator<Activity>, ActivityValidator>();
 
@@ -84,6 +101,8 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
 builder.Services.AddSignalR();
+builder.Host.UseSerilog((context, configuration) =>
+   configuration.ReadFrom.Configuration(context.Configuration));
 
 var app = builder.Build();
 
@@ -112,3 +131,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

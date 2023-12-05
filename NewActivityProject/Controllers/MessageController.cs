@@ -10,12 +10,14 @@ namespace NewActivityProject.Controllers
     {
         private readonly IMediator _mediator;
 
-        public MessagesController(IMediator mediator)
+        
+        public MessagesController(IMediator mediator, ILogger<MessagesController> logger)
+            : base(logger) 
         {
             _mediator = mediator;
         }
 
-        // POST api/messages/create
+
         [HttpPost("[action]")]
         public async Task<ActionResult<Result<MessageDTO>>> Create(Create.Command command)
         {
@@ -23,7 +25,7 @@ namespace NewActivityProject.Controllers
             return HandleResults(result);
         }
 
-        // DELETE api/messages/delete/{id}
+       
         [HttpDelete("[action]/{id}")]
         public async Task<ActionResult<Result<Unit>>> Delete(int id)
         {

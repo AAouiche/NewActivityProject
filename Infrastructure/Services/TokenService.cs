@@ -26,7 +26,7 @@ namespace Infrastructure.Services
                 new Claim(ClaimTypes.Email, user.Email),
             };
 
-            // Fetch the key from configuration
+            
             var jwtKey = _configuration["JwtConfig:Key"];
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

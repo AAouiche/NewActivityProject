@@ -8,9 +8,7 @@ namespace Domain
     {
         public static IServiceCollection AddDomainDependencies(this IServiceCollection services)
         {
-            // Register your domain-specific services, repositories, etc. here.
-            // For example:
-            // services.AddScoped<IYourRepository, YourRepositoryImplementation>();
+            
             
             return services;
         }

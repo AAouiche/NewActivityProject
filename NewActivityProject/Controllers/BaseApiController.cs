@@ -3,6 +3,8 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+using Serilog;
+
 namespace NewActivityProject.Controllers
 {
     [Route("api/[controller]")]
@@ -10,23 +12,26 @@ namespace NewActivityProject.Controllers
     public class BaseApiController : ControllerBase
     {
         private IMediator _mediator;
+        private readonly ILogger<BaseApiController> _logger;
 
-        protected IMediator Mediator => _mediator ??= HttpContext.RequestServices
-            .GetService<IMediator>();
+        protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
+
+        public BaseApiController(ILogger<BaseApiController> logger)
+        {
+            _logger = logger;
+        }
 
         protected ActionResult HandleResults<T>(Result<T> result)
         {
             if (!result.Success || result.Value == null)
             {
-                string errorMessage = string.IsNullOrEmpty(result.Error)
-                    ? "Data not found"
-                    : result.Error;
-                // Log error if needed
+                string errorMessage = string.IsNullOrEmpty(result.Error) ? "Data not found" : result.Error;
+                _logger.LogWarning("HandleResults - Non-successful result: {ErrorMessage}", errorMessage);
                 return NotFound(new { Error = errorMessage });
             }
 
+            _logger.LogInformation("HandleResults - Successful result");
             return Ok(result.Value);
-
         }
     }
 }

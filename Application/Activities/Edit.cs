@@ -1,5 +1,5 @@
 ﻿using Domain.Models;
-using Infrastructure.Repositories;  // Add this line to import your IActivityRepository
+using Infrastructure.Repositories;  
 using Domain.Validation;
 using FluentValidation;
 using MediatR;
@@ -61,7 +61,7 @@ namespace Application.Activities
                 catch (Exception ex) 
                 {
                    
-                    return Result<Unit>.Failure("An error occurred while updating the activity: " + ex.Message);  // Failure result
+                    return Result<Unit>.Failure("An error occurred while updating the activity: " + ex.Message);  
                 }
             }
         }

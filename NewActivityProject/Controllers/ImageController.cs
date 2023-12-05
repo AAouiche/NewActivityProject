@@ -9,7 +9,8 @@ namespace NewActivityProject.Controllers
     {
         private readonly IMediator _mediator;
 
-        public ImageController(IMediator mediator)
+        public ImageController(IMediator mediator, ILogger<ImageController> logger)
+            : base(logger) 
         {
             _mediator = mediator;
         }

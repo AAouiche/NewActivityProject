@@ -11,10 +11,12 @@ namespace Infrastructure.Repositories
     public class ActivityRepository : IActivityRepository
     {
         private readonly AppDbContext _context;
+        private readonly IAccessUser  _accessUser;
 
-        public ActivityRepository(AppDbContext context)
+        public ActivityRepository(AppDbContext context, IAccessUser accessUser)
         {
             _context = context;
+            _accessUser = accessUser;
         }
 
         public async Task<Activity> GetByIdAsync(Guid id)
@@ -23,22 +25,50 @@ namespace Infrastructure.Repositories
             return activity;
         }
 
-        public async Task<PaginatedResult<Activity>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<PaginatedResult<Activity>> GetAllAsync(int pageNumber, int pageSize, string filter = "all", DateTime? selectedDate = null)
         {
+            
             var query = _context.Activities
                         .Include(a => a.Attendees)
                             .ThenInclude(att => att.ApplicationUser)
                                 .ThenInclude(user => user.Image)
                         .AsQueryable();
 
+           
+            var currentUserId = _accessUser.GetUser();
+
+           
+            if (!string.IsNullOrEmpty(filter) && filter != "all")
+            {
+                if (filter == "going")
+                {
+                    query = query.Where(a => a.Attendees.Any(att => att.ApplicationUserId == currentUserId && !att.IsHost));
+                }
+                else if (filter == "hosting")
+                {
+                    query = query.Where(a => a.Attendees.Any(att => att.ApplicationUserId == currentUserId && att.IsHost));
+                }
+            }
+
+            if (selectedDate.HasValue)
+            {
+                query = query.Where(a => a.Date.HasValue && a.Date.Value.Date == selectedDate.Value.Date);
+            }
+
+           
             var count = await query.CountAsync();
 
+            
+            var totalPages = (int)Math.Ceiling(count / (double)pageSize);
+            pageNumber = Math.Max(1, pageNumber); 
+            pageNumber = Math.Min(totalPages, pageNumber); 
+
+            
             var items = await query.Skip((pageNumber - 1) * pageSize)
                                    .Take(pageSize)
                                    .ToListAsync();
 
-            var totalPages = (int)Math.Ceiling(count / (double)pageSize);
-
+            
             return new PaginatedResult<Activity>
             {
                 Items = items,

@@ -3,6 +3,7 @@ using Domain.Models;
 
 using Microsoft.AspNetCore.Identity;
 using Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories
 {
@@ -12,10 +13,12 @@ namespace Infrastructure.Repositories
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IAccessUser _accessUser;
-        public AccountRepository(UserManager<ApplicationUser> userManager, IAccessUser accessuser)
+        private readonly AppDbContext _context;
+        public AccountRepository(UserManager<ApplicationUser> userManager, IAccessUser accessuser, AppDbContext appDbContext)
         {
             _userManager = userManager;
             _accessUser = accessuser;
+            _context = appDbContext;
         }
         public async Task Register(RegisterDTO userDto)
         {
@@ -35,5 +38,16 @@ namespace Infrastructure.Repositories
         {
             
         }
+        public async Task<ApplicationUser> GetUserByIdAsync(string id)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        }
+        public async Task<ApplicationUser> GetUserByIdWithImagesAsync()
+        {
+            return await _context.Users
+                        .Include(u => u.Image)
+                        .FirstOrDefaultAsync(x => x.Id == _accessUser.GetUser());
+        }
+        
     }
 }
