@@ -30,5 +30,5 @@ WORKDIR /app
 # Copy the build output from the build-env image to the new image
 COPY --from=build-env /app/out .
 
-# Configure the command to run your app when the container starts.
+
 ENTRYPOINT ["dotnet", "NewActivityProject.dll"]
