@@ -35,10 +35,9 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         builder =>
         {
-            builder.WithOrigins("https://reactactivities-production.up.railway.app")
+            builder.AllowAnyOrigin()
                    .AllowAnyHeader()
-                   .AllowAnyMethod()
-                   .AllowCredentials();
+                   .AllowAnyMethod();
         });
 });
 builder.Services.AddDbContext<AppDbContext>(options =>
