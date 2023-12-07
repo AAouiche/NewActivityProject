@@ -40,6 +40,12 @@ builder.Services.AddCors(options =>
                .AllowCredentials(); 
     });
 });
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(Environment.GetEnvironmentVariable("PORT") != null ?
+                              int.Parse(Environment.GetEnvironmentVariable("PORT")) :
+                              5000); 
+});
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection"),
