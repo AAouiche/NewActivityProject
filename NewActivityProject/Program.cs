@@ -34,7 +34,7 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.WithOrigins("https://reactactivities-production.up.railway.app") 
+        builder.WithOrigins("http://localhost:5173","https://reactactivities-production.up.railway.app") 
                .AllowAnyHeader()
                .AllowAnyMethod()
                .AllowCredentials(); 

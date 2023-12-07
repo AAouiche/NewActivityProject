@@ -23,7 +23,6 @@ RUN dotnet publish NewActivityProject/NewActivityProject.csproj -c Release -o ou
 # Use the official image as a parent image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
 
-# Set the working directory.
 WORKDIR /app
 
 # Copy the build output from the build-env image to the new image
