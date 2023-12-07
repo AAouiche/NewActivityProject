@@ -11,7 +11,7 @@ COPY Domain/Domain.csproj Domain/
 COPY Infrastructure/Infrastructure.csproj Infrastructure/
 # Add other project references here if you have more
 
-# Restore the Nuget packages
+
 RUN dotnet restore "NewActivityProject - Copy.sln"
 
 # Copy the rest of your app's source code from your host to your image filesystem.
