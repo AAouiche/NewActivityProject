@@ -39,7 +39,7 @@ namespace NewActivityProject.Controllers
             var result = await _mediator.Send(query);
             return HandleResults(result);
         }
-        [HttpPost("TestCreate")]
+        [HttpGet("TestCreate")]
         public ActionResult<string> TestCreate()
         {
             return "Hit TestCreate";
