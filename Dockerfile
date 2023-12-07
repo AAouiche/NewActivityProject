@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 
 WORKDIR /app
 
-# Copy the solution file and project files and restore as distinct layers
+
 COPY ["NewActivityProject - Copy.sln", "./"]
 COPY NewActivityProject/NewActivityProject.csproj NewActivityProject/
 COPY Application/Application.csproj Application/
