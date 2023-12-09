@@ -23,11 +23,13 @@ The backend is designed with a focus on clean architecture, ensuring separation 
 
 ## Built With
 
-- [.NET 7] The framework used for the backend
-- [Entity Framework Core] ORM used for data access
+- [.Net7] The framework used for the backend
+- [Ef Core] ORM used for data access
 - [SignalR] Real-time web functionality
 - [PostGres] Database system
 - [Swagger]API documentation and testing tools
+- [X Unit/fluent validation/moq] unit and integration testing
+- [Cloudinary] Image upload
 
 ## Clone
 git clone https://github.com/AAouiche/NewActivityProject.git
