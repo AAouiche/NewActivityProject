@@ -34,10 +34,17 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.AllowAnyOrigin()
+        builder.WithOrigins("http://localhost:5173","https://reactactivities-production.up.railway.app") 
                .AllowAnyHeader()
-               .AllowAnyMethod();
+               .AllowAnyMethod()
+               .AllowCredentials(); 
     });
+});
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(Environment.GetEnvironmentVariable("PORT") != null ?
+                              int.Parse(Environment.GetEnvironmentVariable("PORT")) :
+                              5000); 
 });
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
