@@ -23,15 +23,25 @@ namespace NewActivityProject.Controllers
 
         protected ActionResult HandleResults<T>(Result<T> result)
         {
-            if (!result.Success || result.Value == null)
+            if (result.Error == "Unauthorized")
+            {
+                _logger.LogWarning("HandleResults - Unauthorized access attempt.");
+                return Unauthorized(new { Error = result.Error });
+            }
+            else if (result.Success &&result.Value == null)
             {
                 string errorMessage = string.IsNullOrEmpty(result.Error) ? "Data not found" : result.Error;
                 _logger.LogWarning("HandleResults - Non-successful result: {ErrorMessage}", errorMessage);
                 return NotFound(new { Error = errorMessage });
             }
+            else if (result.Success && result.Value != null)
+            {
+                _logger.LogInformation("HandleResults - Successful result");
+                return Ok(result.Value);
+            }
+            return BadRequest(result.Error);
 
-            _logger.LogInformation("HandleResults - Successful result");
-            return Ok(result.Value);
+                
         }
     }
 }

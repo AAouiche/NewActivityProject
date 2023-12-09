@@ -60,10 +60,11 @@ namespace Infrastructure.Repositories
 
             
             var totalPages = (int)Math.Ceiling(count / (double)pageSize);
-            pageNumber = Math.Max(1, pageNumber); 
-            pageNumber = Math.Min(totalPages, pageNumber); 
+            pageNumber = Math.Max(1, pageNumber);
+            pageNumber = totalPages > 0 ? Math.Min(totalPages, pageNumber) : 1;
 
-            
+
+
             var items = await query.Skip((pageNumber - 1) * pageSize)
                                    .Take(pageSize)
                                    .ToListAsync();

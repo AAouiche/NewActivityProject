@@ -25,7 +25,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0
 
 WORKDIR /app
 
-# Copy the build output from the build-env image to the new image
+
 COPY --from=build-env /app/out .
 
 

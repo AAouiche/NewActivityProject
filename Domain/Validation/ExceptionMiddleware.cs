@@ -9,6 +9,7 @@ using FluentValidation;
 using System.Net;
 using System.Text.Json;
 using Microsoft.Extensions.Hosting;
+using System.Security.Authentication;
 
 namespace Domain.Validation
 {
@@ -55,6 +56,14 @@ namespace Domain.Validation
                 var validationErrors = string.Join(", ", validationException.Errors.Select(err => $"{err.PropertyName}: {err.ErrorMessage}"));
                 var response = new AppException(context.Response.StatusCode, "Validation failed", validationErrors);
 
+                var jsonResponse = JsonSerializer.Serialize(response, options);
+                await context.Response.WriteAsync(jsonResponse);
+            }
+            else if (exception is AuthenticationException authException)
+            {
+                // Handle authentication exceptions
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                var response = new AppException(context.Response.StatusCode, "Authentication failed", authException.Message);
                 var jsonResponse = JsonSerializer.Serialize(response, options);
                 await context.Response.WriteAsync(jsonResponse);
             }
