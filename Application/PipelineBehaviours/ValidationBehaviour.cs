@@ -22,6 +22,7 @@ public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TReque
             .Where(f => f != null)
             .ToList();
 
+
         if (failures.Any())
         {
             throw new ValidationException("Validation failed", failures);
