@@ -15,7 +15,7 @@ Security: Incorporates authentication and authorisation strategies to ensure sec
 
 Real-time Communication: Utilises SignalR hubs for enabling real time interactions.
 
-Image Handling: Offers services for image upload and management, supporting a dynamic and engaging user interface.
+Image Handling: Offers services for image upload and management.
 
 Persistence: Employs Entity Framework for ORM, facilitating robust and agile data handling.
 
